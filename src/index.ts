@@ -9,10 +9,9 @@ const doc = new jsPDF('portrait', 'px');
 // doc.text('Olá Mundo!', 10, 20);
 
 autoTable(doc, {
-    
+    tableWidth: 100,
     styles: {
         cellWidth: "wrap",
-         
     },
     body: [
         ['TITLE1', 'VALUE1'],
