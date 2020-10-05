@@ -5,6 +5,7 @@ export default function generatePedidoReportWHeader() {
 
 const doc = new jsPDF('portrait', 'px');
 
+const PAGE_MAX_HEIGHT = 630
 const MAX_WIDTH = 430
 // Para manter a margem o valor máximo para o x_start do valor, deve ser [50 + 15 + (180 ~185)]. Isso para "Duas colunas"
 const MAX_VALUE_X_START = 50 + 15 + 150
@@ -194,9 +195,9 @@ doc.text('Info ', section_1.data_position.tres_colunas.x_3_start + 32, section_1
 
 // border remainig lines
 doc.setDrawColor(192,192,192)
-doc.line(MAX_WIDTH, section_1.border.y_start, MAX_WIDTH , section_1.data_position.y_start + 35)
-doc.line(MAX_WIDTH, section_1.data_position.y_start + 35 , section_1.border.x_start , section_1.data_position.y_start + 35 )
-doc.line(section_1.border.x_start, section_1.border.y_start, section_1.border.x_start, section_1.data_position.y_start + 35)
+doc.line(MAX_WIDTH, section_1.border.y_start, MAX_WIDTH , section_1.data_position.y_start + 20)
+doc.line(MAX_WIDTH, section_1.data_position.y_start + 20 , section_1.border.x_start , section_1.data_position.y_start + 20 )
+doc.line(section_1.border.x_start, section_1.border.y_start, section_1.border.x_start, section_1.data_position.y_start + 20)
 
 
 
@@ -205,14 +206,14 @@ doc.line(section_1.border.x_start, section_1.border.y_start, section_1.border.x_
 const section_2 = {
     border: {
         x_start: section_1.border.x_start,
-        y_start: section_1.border.y_start + 60,
+        y_start: section_1.border.y_start + 50,
         drawColor_R: 255,
         drawColor_G: 0,
         drawColor_B: 0
     },
     data_position : {
         ... parametros,
-        y_start: section_1.data_position.y_start + header.logo.y_start + 30
+        y_start: section_1.data_position.y_start + header.logo.y_start + 20
     }
 }
 // border line 1
@@ -589,7 +590,7 @@ doc.line(section_4.border.x_start, section_4.border.y_start, section_4.border.x_
 const section_5 = {
     border: {
         x_start: section_4.border.x_start,
-        y_start: section_4.border.y_start + 60,
+        y_start: section_4.data_position.y_start + 50,
         drawColor_R: 255,
         drawColor_G: 0,
         drawColor_B: 0
@@ -608,7 +609,8 @@ const section_5 = {
         tableRowsNumber: 0,
         tableColumnsNumber: 0,
         cellsParams: {},
-        diDrawCellImplementation: (data) => {}
+        diDrawCellImplementation: (data) => {},
+        table_last_page: 0
     }
 }
 // border line 1
@@ -623,6 +625,18 @@ doc.text('Equipamentos', section_5.border.x_start + 25, section_5.border.y_start
 
 // border line 2
 doc.line(section_5.border.x_start + 75, section_5.border.y_start, MAX_WIDTH , section_5.border.y_start )
+
+// ** 'Equipment Header' **
+doc.setFontSize(9)
+doc.setFont('courier', 'bold')
+doc.text('Equipamento: ', section_5.data_position.x_start , section_5.data_position.y_start + 5 )
+
+// get 'Equipment' value
+
+// ** 'Equipment' value **
+doc.setFontSize(9)
+doc.setFont('courier', 'normal')
+doc.text('Código - Potência kwps ', section_5.data_position.x_start + 52, section_5.data_position.y_start + 5 )
 
 // Get Equipamentos Table Data
 section_5.future.headCells = ['Código', 'Descrição', 'Quantidade']
@@ -760,6 +774,12 @@ section_5.future.diDrawCellImplementation = (data) => {
         section_5.future.table_cell_height = data.cell.height
     }
 
+    if( data.row.index === section_5.future.tableRowsNumber - 1 && 
+        data.column.index === section_5.future.tableColumnsNumber -1 &&
+        ( data.section === 'body' || data.section === 'foot' ) ) {
+            section_5.future.table_last_page = section_5.data_position.table_start_page + ( data.pageCount - 1 )
+    }
+
 }
 
 doc.setDrawColor(0, 0, 0)
@@ -768,7 +788,7 @@ doc.setFillColor(0, 0, 0)
 autoTable(doc, {
     theme: 'grid',
     tableWidth: section_5.data_position.x_start + 355,
-    startY: section_5.data_position.y_start,
+    startY: section_5.data_position.y_start + 20,
     margin: {
         // left: 170
     },
@@ -810,7 +830,7 @@ doc.text('Total: R$', section_5.data_position.tres_colunas.x_3_start,  section_5
 // ** Total value' value **
 doc.setFontSize(12)
 // doc.setFont('courier', 'normal')
-doc.text('<999.999,99>', section_5.data_position.tres_colunas.x_3_start + 55,  section_5.future.table_last_y + section_5.future.table_cell_height )
+doc.text('<999.999,99>', section_5.data_position.tres_colunas.x_3_start + 50,  section_5.future.table_last_y + section_5.future.table_cell_height )
 
 
 // border remainig lines
@@ -823,267 +843,294 @@ doc.line(section_5.border.x_start, section_5.future.table_last_y , section_5.bor
 
 
 
+let section_6 = { }
+// // ------------ SECTION 6 ---------------
+// let section_6 = {
+//     border: {
+//         x_start: section_5.border.x_start,
+//         y_start: section_5.future.table_last_y + (3 * section_5.future.table_cell_height),
+//         drawColor_R: 255,
+//         drawColor_G: 0,
+//         drawColor_B: 0
+//     },
+//     data_position : {
+//         ... parametros,
+//         y_start: section_5.future.table_last_y + (3 * section_5.future.table_cell_height) + 10,
+//         table_start_page: doc.getCurrentPageInfo().pageNumber
+//     },
+//     // Values that can be reconfigured in the future, after the table is rendered.
+//     future: {
+//         table_last_y : 0,
+//         table_cell_height : 0,
+//         headCells: [''],
+//         bodyCells: [ [''] ],
+//         tableRowsNumber: 0,
+//         tableColumnsNumber: 0,
+//         cellsParams: {},
+//         diDrawCellImplementation: (data) => {},
+//         table_last_page: 0
+//     }
+// }
+// // border line 1
+// doc.setDrawColor(192,192,192)
+// doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start + 20, section_6.border.y_start)
 
-// ------------ SECTION 6 ---------------
-const section_6 = {
-    border: {
-        x_start: section_5.border.x_start,
-        y_start: section_5.future.table_last_y + (3 * section_5.future.table_cell_height),
-        drawColor_R: 255,
-        drawColor_G: 0,
-        drawColor_B: 0
-    },
-    data_position : {
-        ... parametros,
-        y_start: section_5.future.table_last_y + (3 * section_5.future.table_cell_height) + 10,
-        table_start_page: doc.getCurrentPageInfo().pageNumber
-    },
-    // Values that can be reconfigured in the future, after the table is rendered.
-    future: {
-        table_last_y : 0,
-        table_cell_height : 0,
-        headCells: [''],
-        bodyCells: [ [''] ],
-        tableRowsNumber: 0,
-        tableColumnsNumber: 0,
-        cellsParams: {},
-        diDrawCellImplementation: (data) => {}
-    }
-}
-// border line 1
-doc.setDrawColor(192,192,192)
-doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start + 20, section_6.border.y_start)
+// // ** section title **
+// doc.setFontSize(10)
+// doc.setFont('normal', 'bold')
+// doc.text('Serviços', section_6.border.x_start + 25, section_6.border.y_start + 2)
 
-// ** section title **
-doc.setFontSize(10)
-doc.setFont('normal', 'bold')
-doc.text('Serviços', section_6.border.x_start + 25, section_6.border.y_start + 2)
+// // border line 2
+// doc.line(section_6.border.x_start + 75, section_6.border.y_start, MAX_WIDTH , section_6.border.y_start )
 
-// border line 2
-doc.line(section_6.border.x_start + 75, section_6.border.y_start, MAX_WIDTH , section_6.border.y_start )
-
-// Get Equipamentos Table Data
-section_6.future.headCells = ['Código', 'Descrição', 'Quantidade', 'Valor Unitário', 'Total']
-section_6.future.bodyCells = [
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
-    [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+// // Get Equipamentos Table Data
+// section_6.future.headCells = ['Código', 'Descrição', 'Quantidade', 'Valor Unitário', 'Total']
+// section_6.future.bodyCells = [
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
+//     [ '999999999', 'XXXXXXXXXXXXXXXXXXXXXXXXX', '9999', 'R$ 9.999,99', 'R$ 99.999,99' ],
     
-]
-section_6.future.tableRowsNumber = section_6.future.bodyCells.length
-section_6.future.tableColumnsNumber = section_6.future.headCells.length
-// let totalTableHeight = 0;
+    
+// ]
+// section_6.future.tableRowsNumber = section_6.future.bodyCells.length
+// section_6.future.tableColumnsNumber = section_6.future.headCells.length
+// // let totalTableHeight = 0;
 
-// That value has to be hard-coded for each of the total number of cells.
-section_6.future.cellsParams = {
-    0: {
-        cellWidth: 38.6
-    },
-    1: {
-        cellWidth: 196
-    },
-    2: {
-        cellWidth: 42.2
-    },
-    3: {
-        cellWidth: 56.6
-    },
-    4: {
-        cellWidth: 56.6
-    }
-}
+// // That value has to be hard-coded for each of the total number of cells.
+// section_6.future.cellsParams = {
+//     0: {
+//         cellWidth: 38.6
+//     },
+//     1: {
+//         cellWidth: 196
+//     },
+//     2: {
+//         cellWidth: 42.2
+//     },
+//     3: {
+//         cellWidth: 56.6
+//     },
+//     4: {
+//         cellWidth: 56.6
+//     }
+// }
 
-// ** Equipamentos Table **
+// // ** Equipamentos Table **
 
-section_6.future.diDrawCellImplementation = (data) => {
-    //  THAT HOOK IS CALLED EACH PAGE OVER AGAIN. THE LIB CONSIDERS A NEW TABLE, EVEN IT'S A "SEQUEL" OF THE SAME TABLE, BUT ON A NEW PAGE. 
+// section_6.future.diDrawCellImplementation = (data) => {
+//     //  THAT HOOK IS CALLED EACH PAGE OVER AGAIN. THE LIB CONSIDERS A NEW TABLE, EVEN IT'S A "SEQUEL" OF THE SAME TABLE, BUT ON A NEW PAGE. 
 
-    if( data.column.index === 0 || data.column.index === (section_6.future.tableColumnsNumber -1) ) {
-        const y_start = data.cell.y;
-        const x_start = data.column.index === 0 ? section_6.border.x_start : MAX_WIDTH;
+//     if( data.column.index === 0 || data.column.index === (section_6.future.tableColumnsNumber -1) ) {
+//         const y_start = data.cell.y;
+//         const x_start = data.column.index === 0 ? section_6.border.x_start : MAX_WIDTH;
 
-        // Line X  -> Alongside the Table
-        doc.line(x_start, y_start, x_start, y_start + data.row.height)
-    }
+//         // Line X  -> Alongside the Table
+//         doc.line(x_start, y_start, x_start, y_start + data.row.height)
+//     }
 
-    if(data.row.index === 0 && data.section === 'head' && doc.getCurrentPageInfo().pageNumber === section_6.data_position.table_start_page ) {
+//     if(data.row.index === 0 && data.section === 'head' && doc.getCurrentPageInfo().pageNumber === section_6.data_position.table_start_page ) {
        
-        if( data.column.index === 0) {
-            // line 3
-            // doc.setDrawColor(0,0,0,0)
-            doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start, data.cell.y)
-            // console.log('section_6.border.y_start: ', section_6.border.y_start )
-            // console.log('cell y: ', data.cell.y )
-        } else if( data.column.index === section_6.future.tableColumnsNumber - 1 ) {
-            // line 4
-            // doc.setDrawColor(0,0,0,0)
-            doc.line(MAX_WIDTH, section_6.border.y_start, MAX_WIDTH, data.cell.y)
-            // console.log('section_6.border.y_start: ', data.cell.y )
-            // console.log('cell y: ', data.cell.y )
-        }
-    }
+//         if( data.column.index === 0) {
+//             // line 3
+//             // doc.setDrawColor(0,0,0,0)
+//             doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start, data.cell.y)
+//             // console.log('section_6.border.y_start: ', section_6.border.y_start )
+//             // console.log('cell y: ', data.cell.y )
+//         } else if( data.column.index === section_6.future.tableColumnsNumber - 1 ) {
+//             // line 4
+//             // doc.setDrawColor(0,0,0,0)
+//             doc.line(MAX_WIDTH, section_6.border.y_start, MAX_WIDTH, data.cell.y)
+//             // console.log('section_6.border.y_start: ', data.cell.y )
+//             // console.log('cell y: ', data.cell.y )
+//         }
+//     }
 
-    if( data.row.index === section_6.future.tableRowsNumber - 1 && data.section === 'body' ) {
-        // Inclui o tamanho da célula duas vezes para garantir não estar dentro da tabela 
-        section_6.future.table_last_y = data.cell.y + data.cell.height
-        section_6.future.table_cell_height = data.cell.height
-    }
+//     if( data.row.index === section_6.future.tableRowsNumber - 1 && data.section === 'body' ) {
+//         // Inclui o tamanho da célula duas vezes para garantir não estar dentro da tabela 
+//         section_6.future.table_last_y = data.cell.y + data.cell.height
+//         section_6.future.table_cell_height = data.cell.height
+//     }
 
-    return null;
+//     if( data.row.index === section_6.future.tableRowsNumber - 1 && 
+//         data.column.index === section_6.future.tableColumnsNumber -1 &&
+//         ( data.section === 'body' || data.section === 'foot' ) ) {
+//         section_6.future.table_last_page = section_6.data_position.table_start_page + ( data.pageCount - 1 )
+//     }
+
+//     return null;
     
-}
-doc.setDrawColor(0,0,0)
-autoTable(doc, {
-    theme: 'grid',
-    tableWidth: section_6.data_position.x_start + 355,
-    startY: section_6.data_position.y_start,
-    margin: {
-        // left: 170
-    },
-    head: [
-        section_6.future.headCells
-    ],
-    headStyles: {
-        fillColor: 10
-    },
-    body: section_6.future.bodyCells,
-    styles: {
-        cellWidth: 'wrap',
-        fontSize: 9,
-        cellPadding: {
-            horizontal: 2,
-            vertical: 3
-        },
-        // valign: 'middle',
-        // halign: 'center'
-        overflow: 'linebreak'
-    },
-    columnStyles: section_6.future.cellsParams,
-    didDrawCell: section_6.future.diDrawCellImplementation,
-    // willDrawCell: willDrawCellImplementation
-})
+// }
+// doc.setDrawColor(0,0,0)
+// autoTable(doc, {
+//     theme: 'grid',
+//     tableWidth: section_6.data_position.x_start + 355,
+//     startY: section_6.data_position.y_start,
+//     margin: {
+//         // left: 170
+//     },
+//     head: [
+//         section_6.future.headCells
+//     ],
+//     headStyles: {
+//         fillColor: 10
+//     },
+//     body: section_6.future.bodyCells,
+//     styles: {
+//         cellWidth: 'wrap',
+//         fontSize: 9,
+//         cellPadding: {
+//             horizontal: 2,
+//             vertical: 3
+//         },
+//         // valign: 'middle',
+//         // halign: 'center'
+//         overflow: 'linebreak'
+//     },
+//     columnStyles: section_6.future.cellsParams,
+//     didDrawCell: section_6.future.diDrawCellImplementation,
+//     // willDrawCell: willDrawCellImplementation
+// })
 
-// section_6.border.y_end = section_6.data_position.y_start + totalTableHeight + 20
+// // section_6.border.y_end = section_6.data_position.y_start + totalTableHeight + 20
 
-// ** 'Total' **
-doc.setFontSize(12)
-doc.setFont('courier', 'bold')
-doc.text('Total: R$', section_6.data_position.tres_colunas.x_3_start,  section_6.future.table_last_y + section_6.future.table_cell_height)
+// // ** 'Total' **
+// doc.setFontSize(12)
+// doc.setFont('courier', 'bold')
+// doc.text('Total: R$', section_6.data_position.tres_colunas.x_3_start,  section_6.future.table_last_y + section_6.future.table_cell_height)
 
-//TODO: get 'Total value' value
+// //TODO: get 'Total value' value
 
-// ** Total value' value **
-doc.setFontSize(12)
-doc.setFont('courier', 'bold')
-doc.text('<999.999,99>', section_6.data_position.tres_colunas.x_3_start + 50,  section_6.future.table_last_y + section_6.future.table_cell_height )
+// // ** Total value' value **
+// doc.setFontSize(12)
+// doc.setFont('courier', 'bold')
+// doc.text('<999.999,99>', section_6.data_position.tres_colunas.x_3_start + 50,  section_6.future.table_last_y + section_6.future.table_cell_height )
 
-// border remainig lines
-doc.setDrawColor(192,192,192)
-doc.line(MAX_WIDTH, section_6.future.table_last_y, MAX_WIDTH ,  section_6.future.table_last_y + section_6.future.table_cell_height * 2 )
-doc.line(MAX_WIDTH, section_6.future.table_last_y + section_6.future.table_cell_height * 2, section_6.border.x_start ,  section_6.future.table_last_y +  section_6.future.table_cell_height * 2 )
-doc.line(section_6.border.x_start, section_6.future.table_last_y , section_6.border.x_start,  section_6.future.table_last_y + section_6.future.table_cell_height * 2)
-
-
+// // border remainig lines
+// doc.setDrawColor(192,192,192)
+// doc.line(MAX_WIDTH, section_6.future.table_last_y, MAX_WIDTH ,  section_6.future.table_last_y + section_6.future.table_cell_height * 2 )
+// doc.line(MAX_WIDTH, section_6.future.table_last_y + section_6.future.table_cell_height * 2, section_6.border.x_start ,  section_6.future.table_last_y +  section_6.future.table_cell_height * 2 )
+// doc.line(section_6.border.x_start, section_6.future.table_last_y , section_6.border.x_start,  section_6.future.table_last_y + section_6.future.table_cell_height * 2)
 
 
 
-// ------- SECTION 7 ----------
-const section_7 = {
-    border: {
-        x_start: section_6.border.x_start,
-        y_start: section_6.future.table_last_y + ( 3 * section_6.future.table_cell_height) ,
-        drawColor_R: 255,
-        drawColor_G: 0,
-        drawColor_B: 0
-    },
-    data_position : {
-        ... parametros,
-        y_start: section_6.future.table_last_y + (3 * section_6.future.table_cell_height) + 20,
-        table_start_page: doc.getCurrentPageInfo().pageNumber
-    },
-}
-// border line 1
-doc.setDrawColor(192,192,192)
-doc.line(section_7.border.x_start, section_7.border.y_start, section_7.border.x_start + 20, section_7.border.y_start)
 
-// ** section title **
-doc.setFontSize(10)
-doc.setFont('', 'bold')
-doc.text('Forma de Pagamento', section_7.border.x_start + 25, section_7.border.y_start + 2)
+let section_7 = { }
+// // ------- SECTION 7 ----------
+// const doesSection_6_exists = section_6.border ? true : false;
+// let previousSection = doesSection_6_exists ? section_6: section_5;
 
-// border line 2
-doc.line(section_7.border.x_start + 100 , section_7.border.y_start, MAX_WIDTH, section_7.border.y_start )
+// if( ((previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20) + 20) > PAGE_MAX_HEIGHT) {
+//     doc.addPage()
+// }
 
-// get 'Forma de Pagamento' value
+// const section_7_samePageAsPrevious = 
+//     previousSection ? 
+//     previousSection.future.table_last_page === doc.getCurrentPageInfo().pageNumber 
+//     : section_5.future.table_last_page === doc.getCurrentPageInfo().pageNumber;
 
-// ** Forma de Pagamento **
-doc.setFontSize(9)
-doc.setFont('courier', 'normal')
-doc.text('<CONDIÇÕES>', section_7.data_position.x_start, section_7.data_position.y_start )
+// let section_7 = {
+//     border: {
+//         x_start: previousSection.border.x_start,
+//         y_start: section_7_samePageAsPrevious ? previousSection.future.table_last_y + ( 3 * previousSection.future.table_cell_height) : header.logo.y_start,
+//         drawColor_R: 255,
+//         drawColor_G: 0,
+//         drawColor_B: 0
+//     },
+//     data_position : {
+//         ... parametros,
+//         y_start: section_7_samePageAsPrevious ? previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20 : header.logo.y_start + 25 ,
+//         table_start_page: doc.getCurrentPageInfo().pageNumber
+//     },
+// }
+// // border line 1
+// doc.setDrawColor(192,192,192)
+// doc.line(section_7.border.x_start, section_7.border.y_start, section_7.border.x_start + 20, section_7.border.y_start)
+
+// // ** section title **
+// doc.setFontSize(10)
+// doc.setFont('', 'bold')
+// doc.text('Forma de Pagamento', section_7.border.x_start + 25, section_7.border.y_start + 2)
+
+// // border line 2
+// doc.line(section_7.border.x_start + 100 , section_7.border.y_start, MAX_WIDTH, section_7.border.y_start )
+
+// // get 'Forma de Pagamento' value
+
+// // ** Forma de Pagamento **
+// doc.setFontSize(9)
+// doc.setFont('courier', 'normal')
+// doc.text('<CONDIÇÕES>', section_7.data_position.x_start, section_7.data_position.y_start )
 
 
-// border remainig lines
-doc.setDrawColor(192,192,192)
-doc.line(MAX_WIDTH, section_7.border.y_start, MAX_WIDTH , section_7.data_position.y_start + 20)
-doc.line(MAX_WIDTH, section_7.data_position.y_start + 20 , section_7.border.x_start , section_7.data_position.y_start + 20 )
-doc.line(section_7.border.x_start, section_7.border.y_start, section_7.border.x_start, section_7.data_position.y_start + 20)
+// // border remainig lines
+// doc.setDrawColor(192,192,192)
+// doc.line(MAX_WIDTH, section_7.border.y_start, MAX_WIDTH , section_7.data_position.y_start + 20)
+// doc.line(MAX_WIDTH, section_7.data_position.y_start + 20 , section_7.border.x_start , section_7.data_position.y_start + 20 )
+// doc.line(section_7.border.x_start, section_7.border.y_start, section_7.border.x_start, section_7.data_position.y_start + 20)
 
 
 
 
 
 // ------- SECTION 8 ----------
+
+if( (section_5.future.table_last_y + (3 * section_5.future.table_cell_height) + 20 ) > PAGE_MAX_HEIGHT) {
+    doc.addPage()
+}
+const section_8_samePageAsPrevious = section_5.future.table_last_page === doc.getCurrentPageInfo().pageNumber;
 const section_8 = {
     border: {
-        x_start: section_7.border.x_start,
+        x_start: section_5.border.x_start,
         // y_start: section_7.future.table_last_y + ( 3 * section_7.future.table_cell_height) ,
-        y_start: ( section_7.data_position.y_start + 20 ) + 15,
+        y_start: section_8_samePageAsPrevious? 
+            section_5.future.table_last_y + (3 * section_5.future.table_cell_height) : 
+            header.logo.y_start ,
         drawColor_R: 255,
         drawColor_G: 0,
         drawColor_B: 0
@@ -1091,7 +1138,7 @@ const section_8 = {
     data_position : {
         ... parametros,
         // y_start: section_7.future.table_last_y + (3 * section_7.future.table_cell_height) + 20,
-        y_start: ( section_7.data_position.y_start + 20 ) + 35 ,
+        y_start: section_8_samePageAsPrevious ? section_5.future.table_last_y + (3 * section_5.future.table_cell_height) + 15 : header.logo.y_start + 25 ,
         table_start_page: doc.getCurrentPageInfo().pageNumber
     },
     // Values that can be reconfigured in the future, after the table is rendered.
@@ -1111,7 +1158,7 @@ doc.line(section_8.border.x_start + 70 , section_8.border.y_start, MAX_WIDTH, se
 // Total
 doc.setFontSize(12)
 doc.setFont('courier', 'bold')
-doc.text('Total R$: ', section_8.data_position.tres_colunas.x_3_start, section_8.data_position.y_start )
+doc.text('Total: R$ ', section_8.data_position.tres_colunas.x_3_start, section_8.data_position.y_start )
 
 // get 'Total' value
 
@@ -1125,7 +1172,8 @@ doc.text('<999.999,99>', section_8.data_position.tres_colunas.x_3_start + 50, se
 doc.setDrawColor(192,192,192)
 doc.line(MAX_WIDTH, section_8.border.y_start, MAX_WIDTH , section_8.data_position.y_start + 20)
 doc.line(MAX_WIDTH, section_8.data_position.y_start + 20 , section_8.border.x_start , section_8.data_position.y_start + 20 )
-doc.line(section_8.border.x_start, section_8.border.y_start, section_8.border.x_start, section_8.data_position.y_start + 20)
+doc.line(section_8.border.x_start, section_8.border.y_start, section_8.border.x_start, section_8.data_position.y_start + 20 )
+
 
 return doc.output('bloburi')
 }

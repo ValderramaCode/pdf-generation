@@ -440,6 +440,18 @@ doc.setFontSize(10)
 doc.setFont('', 'bold')
 doc.text('Equipamentos', section_4.border.x_start + 25, section_4.border.y_start + 2)
 
+// ** 'Equipment Header' **
+doc.setFontSize(9)
+doc.setFont('courier', 'bold')
+doc.text('Equipamento: ', section_4.data_position.x_start , section_4.data_position.y_start + 5 )
+
+// get 'Equipment' value
+
+// ** 'Equipment' value **
+doc.setFontSize(9)
+doc.setFont('courier', 'normal')
+doc.text('Código - Potência kwps ', section_4.data_position.x_start + 52, section_4.data_position.y_start + 5 )
+
 // border line 2
 doc.line(section_4.border.x_start + 75, section_4.border.y_start, MAX_WIDTH , section_4.border.y_start )
 
@@ -593,7 +605,7 @@ doc.setFillColor(0, 0, 0)
 autoTable(doc, {
     theme: 'grid',
     tableWidth: section_4.data_position.x_start + 355,
-    startY: section_4.data_position.y_start,
+    startY: section_4.data_position.y_start + 20,
     margin: {
         // left: 170
     },
@@ -635,7 +647,7 @@ doc.text('Total: R$', section_4.data_position.tres_colunas.x_3_start,  section_4
 // ** Total value' value **
 doc.setFontSize(12)
 // doc.setFont('courier', 'normal')
-doc.text('<999.999,99>', section_4.data_position.tres_colunas.x_3_start + 55,  section_4.future.table_last_y + section_4.future.table_cell_height )
+doc.text('<999.999,99>', section_4.data_position.tres_colunas.x_3_start + 50,  section_4.future.table_last_y + section_4.future.table_cell_height )
 
 
 // border remainig lines
@@ -648,9 +660,7 @@ doc.line(section_4.border.x_start, section_4.future.table_last_y , section_4.bor
 
 
 
-let section_5 = {
-    exists: false
-}
+let section_5 = { }
 // // ------------ SECTION 5 ---------------
 // let section_5 = {
 //     border: {
@@ -869,73 +879,73 @@ let section_5 = {
 
 
 // ------- SECTION 6 ----------
-const doesSection_5_exists = section_5.exists ? true : false;
-let previousSection = doesSection_5_exists ? section_5.exists : section_4;
+// const doesSection_5_exists = section_5.border ? true : false;
+// let previousSection = doesSection_5_exists ? section_5.exists : section_4;
 
-if( ((previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20) + 20) > PAGE_MAX_HEIGHT) {
-    doc.addPage()
-}
+// if( ((previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20) + 20) > PAGE_MAX_HEIGHT) {
+//     doc.addPage()
+// }
 
-const section_6_samePageAsPrevious = 
-    previousSection ? 
-    previousSection.future.table_last_page === doc.getCurrentPageInfo().pageNumber 
-    : section_4.future.table_last_page === doc.getCurrentPageInfo().pageNumber;
+// const section_6_samePageAsPrevious = 
+//     previousSection ? 
+//     previousSection.future.table_last_page === doc.getCurrentPageInfo().pageNumber 
+//     : section_4.future.table_last_page === doc.getCurrentPageInfo().pageNumber;
 
-console.log(section_6_samePageAsPrevious)
-const section_6 = {
-    border: {
-        x_start: previousSection.border.x_start,
-        y_start: section_6_samePageAsPrevious ? previousSection.future.table_last_y + ( 3 * previousSection.future.table_cell_height) : header.logo.y_start,
-        drawColor_R: 255,
-        drawColor_G: 0,
-        drawColor_B: 0
-    },
-    data_position : {
-        ... parametros,
-        y_start: section_6_samePageAsPrevious ? previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20 : header.logo.y_start + 25 ,
-        table_start_page: doc.getCurrentPageInfo().pageNumber
-    },
-}
-// border line 1
-doc.setDrawColor(192,192,192)
-doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start + 20, section_6.border.y_start)
+// console.log(section_6_samePageAsPrevious)
+// const section_6 = {
+//     border: {
+//         x_start: previousSection.border.x_start,
+//         y_start: section_6_samePageAsPrevious ? previousSection.future.table_last_y + ( 3 * previousSection.future.table_cell_height) : header.logo.y_start,
+//         drawColor_R: 255,
+//         drawColor_G: 0,
+//         drawColor_B: 0
+//     },
+//     data_position : {
+//         ... parametros,
+//         y_start: section_6_samePageAsPrevious ? previousSection.future.table_last_y + (3 * previousSection.future.table_cell_height) + 20 : header.logo.y_start + 25 ,
+//         table_start_page: doc.getCurrentPageInfo().pageNumber
+//     },
+// }
+// // border line 1
+// doc.setDrawColor(192,192,192)
+// doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start + 20, section_6.border.y_start)
 
-// ** section title **
-doc.setFontSize(10)
-doc.setFont('', 'bold')
-doc.text('Forma de Pagamento', section_6.border.x_start + 25, section_6.border.y_start + 2)
+// // ** section title **
+// doc.setFontSize(10)
+// doc.setFont('', 'bold')
+// doc.text('Forma de Pagamento', section_6.border.x_start + 25, section_6.border.y_start + 2)
 
-// border line 2
-doc.line(section_6.border.x_start + 100 , section_6.border.y_start, MAX_WIDTH, section_6.border.y_start )
+// // border line 2
+// doc.line(section_6.border.x_start + 100 , section_6.border.y_start, MAX_WIDTH, section_6.border.y_start )
 
-// get 'Forma de Pagamento' value
+// // get 'Forma de Pagamento' value
 
-// ** Forma de Pagamento **
-doc.setFontSize(9)
-doc.setFont('courier', 'normal')
-doc.text('<CONDIÇÕES>', section_6.data_position.x_start, section_6.data_position.y_start )
+// // ** Forma de Pagamento **
+// doc.setFontSize(9)
+// doc.setFont('courier', 'normal')
+// doc.text('<CONDIÇÕES>', section_6.data_position.x_start, section_6.data_position.y_start )
 
 
-// border remainig lines
-doc.setDrawColor(192,192,192)
-doc.line(MAX_WIDTH, section_6.border.y_start, MAX_WIDTH , section_6.data_position.y_start + 20)
-doc.line(MAX_WIDTH, section_6.data_position.y_start + 20 , section_6.border.x_start , section_6.data_position.y_start + 20 )
-doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start, section_6.data_position.y_start + 20)
+// // border remainig lines
+// doc.setDrawColor(192,192,192)
+// doc.line(MAX_WIDTH, section_6.border.y_start, MAX_WIDTH , section_6.data_position.y_start + 20)
+// doc.line(MAX_WIDTH, section_6.data_position.y_start + 20 , section_6.border.x_start , section_6.data_position.y_start + 20 )
+// doc.line(section_6.border.x_start, section_6.border.y_start, section_6.border.x_start, section_6.data_position.y_start + 20)
 
 
 
 
 
 // ------- SECTION 7 ----------
-if( ((( section_6.data_position.y_start + 20 ) + 35 ) + 20) > PAGE_MAX_HEIGHT) {
+if( ((section_4.future.table_last_y + (3 * section_4.future.table_cell_height) + 20) + 20 ) >= PAGE_MAX_HEIGHT) {
     doc.addPage()
 }
-const section_7_samePageAsPrevious = section_6.data_position.table_start_page === doc.getCurrentPageInfo().pageNumber;
+const section_7_samePageAsPrevious = section_4.future.table_last_page === doc.getCurrentPageInfo().pageNumber;
 const section_7 = {
     border: {
-        x_start: section_6.border.x_start,
+        x_start: section_7_samePageAsPrevious ? section_4.border.x_start : header.logo.x_start,
         // y_start: section_6.future.table_last_y + ( 3 * section_6.future.table_cell_height) ,
-        y_start: section_7_samePageAsPrevious ? ( section_6.data_position.y_start + 20 ) + 15 : header.logo.y_start ,
+        y_start: section_7_samePageAsPrevious ?  section_4.future.table_last_y + ( 3 * section_4.future.table_cell_height) : header.logo.y_start ,
         drawColor_R: 255,
         drawColor_G: 0,
         drawColor_B: 0
@@ -943,7 +953,7 @@ const section_7 = {
     data_position : {
         ... parametros,
         // y_start: section_6.future.table_last_y + (3 * section_6.future.table_cell_height) + 20,
-        y_start: section_7_samePageAsPrevious ? ( section_6.data_position.y_start + 20 ) + 35 : header.logo.y_start + 25 ,
+        y_start: section_7_samePageAsPrevious ? section_4.future.table_last_y + (3 * section_4.future.table_cell_height) + 20 : header.logo.y_start + 25 ,
         table_start_page: doc.getCurrentPageInfo().pageNumber
     },
     // Values that can be reconfigured in the future, after the table is rendered.
@@ -963,7 +973,7 @@ doc.line(section_7.border.x_start + 70 , section_7.border.y_start, MAX_WIDTH, se
 // Total
 doc.setFontSize(12)
 doc.setFont('courier', 'bold')
-doc.text('Total R$: ', section_7.data_position.tres_colunas.x_3_start, section_7.data_position.y_start )
+doc.text('Total: R$ ', section_7.data_position.tres_colunas.x_3_start, section_7.data_position.y_start )
 
 // get 'Total' value
 
